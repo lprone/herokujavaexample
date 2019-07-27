@@ -10,8 +10,8 @@ import java.util.ArrayList;
  * @author lprone
  */
 public class Server {
-    private static final int PORT = 2087;
-    private static ArrayList<Socket> clients = new ArrayList<Socket>();
+    private static final int PORT = Integer.parseInt(System.getenv("PORT"));
+    private static ArrayList<Socket> clients = new ArrayList<>();
 
     /**
      * @param arg
