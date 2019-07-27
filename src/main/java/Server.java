@@ -1,26 +1,64 @@
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 
-public class Server extends HttpServlet {
+/**
+ *
+ * @author lprone
+ *
+ */
+public class Server {
+    private static final int PORT = Integer.parseInt(System.getenv("PORT"));
+    private static ArrayList<Socket> clients = new ArrayList<Socket>();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().print("Hello from Java!\n");
-    }
+    /**
+     *
+     * @param arg
+     */
+    public static void main(String[] arg) {
+        try {
+            ServerSocket skServer = new ServerSocket(PORT);
+            System.out.println("Escuchando Puerto " + PORT);
+            while (true) {
+                Socket skClient = skServer.accept();
+                System.out.println("Cliente " + skClient.toString());
+                clients.add(skClient);
 
-    public static void main(String[] args) throws Exception {
-        org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(Integer.valueOf(System.getenv("PORT")));
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        server.setHandler(context);
-        context.addServlet(new ServletHolder(new Server()), "/*");
-        server.start();
-        server.join();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            OutputStream os;
+                            DataInputStream receive;
+                            DataOutputStream send;
+                            while (true) {
+                                receive = new DataInputStream(skClient.getInputStream());
+                                String mensaje = receive.readUTF();
+
+                                for (Socket client : clients) {
+                                    if (skClient != client) {
+                                        os = client.getOutputStream();
+                                        try {
+                                            send = new DataOutputStream(os);
+                                            send.writeUTF(mensaje);
+                                        } catch (IOException e) {
+                                            System.out.println("Error Reenviar");
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            // System.out.println("Error Run");
+                        }
+                    }
+                }).start();
+            }
+        } catch (Exception e) {
+            System.out.println("Error Servidor");
+        }
     }
 }
