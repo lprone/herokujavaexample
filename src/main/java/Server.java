@@ -7,21 +7,18 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 /**
- *
  * @author lprone
- *
  */
 public class Server {
     private static final int PORT = Integer.parseInt(System.getenv("PORT"));
     private static ArrayList<Socket> clients = new ArrayList<Socket>();
 
     /**
-     *
      * @param arg
      */
     public static void main(String[] arg) {
         try {
-            ServerSocket skServer = new ServerSocket(PORT);
+            final ServerSocket skServer = new ServerSocket(PORT);
             System.out.println("Escuchando Puerto " + PORT);
             while (true) {
                 Socket skClient = skServer.accept();
