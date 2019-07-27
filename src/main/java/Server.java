@@ -1,4 +1,3 @@
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -8,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class HelloWorld extends HttpServlet {
+public class Server extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -16,11 +15,11 @@ public class HelloWorld extends HttpServlet {
     }
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(Integer.valueOf(System.getenv("PORT")));
+        org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-        context.addServlet(new ServletHolder(new HelloWorld()), "/*");
+        context.addServlet(new ServletHolder(new Server()), "/*");
         server.start();
         server.join();
     }
