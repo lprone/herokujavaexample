@@ -21,7 +21,7 @@ public class Server {
             final ServerSocket skServer = new ServerSocket(PORT);
             System.out.println("Escuchando Puerto " + PORT);
             while (true) {
-                Socket skClient = skServer.accept();
+                final Socket skClient = skServer.accept();
                 System.out.println("Cliente " + skClient.toString());
                 clients.add(skClient);
 
